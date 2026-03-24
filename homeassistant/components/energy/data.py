@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 from collections.abc import Awaitable, Callable
-from typing import Literal, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 import voluptuous as vol
 
@@ -41,6 +41,9 @@ class FlowFromGridSourceType(TypedDict):
     entity_energy_price: str | None  # entity_id of an entity providing price ($/kWh)
     number_energy_price: float | None  # Price for energy ($/kWh)
 
+    # An optional custom name for display in energy graphs
+    name: NotRequired[str]
+
 
 class FlowToGridSourceType(TypedDict):
     """Dictionary describing the 'to' stat for the grid source."""
@@ -56,6 +59,9 @@ class FlowToGridSourceType(TypedDict):
     # Used to generate costs if stat_compensation is set to None
     entity_energy_price: str | None  # entity_id of an entity providing price ($/kWh)
     number_energy_price: float | None  # Price for energy ($/kWh)
+
+    # An optional custom name for display in energy graphs
+    name: NotRequired[str]
 
 
 class GridSourceType(TypedDict):
@@ -77,6 +83,9 @@ class SolarSourceType(TypedDict):
     stat_energy_from: str
     config_entry_solar_forecast: list[str] | None
 
+    # An optional custom name for display in energy graphs
+    name: NotRequired[str]
+
 
 class BatterySourceType(TypedDict):
     """Dictionary holding the source of battery storage."""
@@ -85,6 +94,9 @@ class BatterySourceType(TypedDict):
 
     stat_energy_from: str
     stat_energy_to: str
+
+    # An optional custom name for display in energy graphs
+    name: NotRequired[str]
 
 
 class GasSourceType(TypedDict):
@@ -103,6 +115,9 @@ class GasSourceType(TypedDict):
     entity_energy_price: str | None  # entity_id of an entity providing price ($/m³)
     number_energy_price: float | None  # Price for energy ($/m³)
 
+    # An optional custom name for display in energy graphs
+    name: NotRequired[str]
+
 
 class WaterSourceType(TypedDict):
     """Dictionary holding the source of water consumption."""
@@ -119,6 +134,9 @@ class WaterSourceType(TypedDict):
     # Used to generate costs if stat_cost is set to None
     entity_energy_price: str | None  # entity_id of an entity providing price ($/m³)
     number_energy_price: float | None  # Price for energy ($/m³)
+
+    # An optional custom name for display in energy graphs
+    name: NotRequired[str]
 
 
 type SourceType = (
@@ -173,6 +191,7 @@ FLOW_FROM_GRID_SOURCE_SCHEMA = vol.All(
             vol.Remove("entity_energy_from"): vol.Any(str, None),
             vol.Optional("entity_energy_price"): vol.Any(str, None),
             vol.Optional("number_energy_price"): vol.Any(vol.Coerce(float), None),
+            vol.Optional("name"): str,
         }
     ),
     _flow_from_ensure_single_price,
@@ -187,6 +206,7 @@ FLOW_TO_GRID_SOURCE_SCHEMA = vol.Schema(
         vol.Remove("entity_energy_to"): vol.Any(str, None),
         vol.Optional("entity_energy_price"): vol.Any(str, None),
         vol.Optional("number_energy_price"): vol.Any(vol.Coerce(float), None),
+        vol.Optional("name"): str,
     }
 )
 
@@ -228,6 +248,7 @@ SOLAR_SOURCE_SCHEMA = vol.Schema(
         vol.Required("type"): "solar",
         vol.Required("stat_energy_from"): str,
         vol.Optional("config_entry_solar_forecast"): vol.Any([str], None),
+        vol.Optional("name"): str,
     }
 )
 BATTERY_SOURCE_SCHEMA = vol.Schema(
@@ -235,6 +256,7 @@ BATTERY_SOURCE_SCHEMA = vol.Schema(
         vol.Required("type"): "battery",
         vol.Required("stat_energy_from"): str,
         vol.Required("stat_energy_to"): str,
+        vol.Optional("name"): str,
     }
 )
 GAS_SOURCE_SCHEMA = vol.Schema(
@@ -246,6 +268,7 @@ GAS_SOURCE_SCHEMA = vol.Schema(
         vol.Remove("entity_energy_from"): vol.Any(str, None),
         vol.Optional("entity_energy_price"): vol.Any(str, None),
         vol.Optional("number_energy_price"): vol.Any(vol.Coerce(float), None),
+        vol.Optional("name"): str,
     }
 )
 WATER_SOURCE_SCHEMA = vol.Schema(
@@ -255,6 +278,7 @@ WATER_SOURCE_SCHEMA = vol.Schema(
         vol.Optional("stat_cost"): vol.Any(str, None),
         vol.Optional("entity_energy_price"): vol.Any(str, None),
         vol.Optional("number_energy_price"): vol.Any(vol.Coerce(float), None),
+        vol.Optional("name"): str,
     }
 )
 
